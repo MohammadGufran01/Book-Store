@@ -1,0 +1,472 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}{{ book.title }} by {{ book.author.name }} | Reader's Haven{% endblock %}
+
+{% block content %}
+<div class="bg-white border-b border-slate-200 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center text-xs text-slate-500 gap-1.5">
+            <a href="{% url 'books:home' %}" class="hover:text-brand-600">Home</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <a href="{% url 'books:book_list' %}" class="hover:text-brand-600">Catalog</a>
+            {% if book.genres.exists %}
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <a href="{% url 'books:genre_books' book.genres.first.slug %}" class="hover:text-brand-600">{{ book.genres.first.name }}</a>
+            {% endif %}
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-slate-800 font-semibold truncate">{{ book.title }}</span>
+        </nav>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- Left: Book Cover & Quick Actions -->
+        <div class="lg:col-span-4 space-y-4">
+            <div class="relative bg-slate-100 rounded-2xl overflow-hidden shadow-xl border border-slate-200 aspect-[3/4]">
+                <img src="{{ book.get_cover_image_url }}" alt="{{ book.title }}" class="w-full h-full object-cover">
+                
+                {% if book.discount_price %}
+                <span class="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-md">
+                    {{ book.discount_percentage }}% OFF
+                </span>
+                {% endif %}
+
+                {% if book.is_bestseller %}
+                <span class="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-md">
+                    ★ Bestseller
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Wishlist & Share buttons -->
+            <div class="flex items-center gap-3">
+                {% if user.is_authenticated %}
+                <form action="{% url 'cart:toggle_wishlist' book.id %}" method="POST" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-300 hover:border-rose-300 hover:bg-rose-50 text-slate-700 hover:text-rose-600 text-xs font-semibold transition-colors">
+                        <i data-lucide="heart" class="w-4 h-4 {% if book.id|is_in_set:wishlist_book_ids %}fill-rose-500 text-rose-500{% endif %}"></i>
+                        {% if book.id|is_in_set:wishlist_book_ids %}Saved in Wishlist{% else %}Add to Wishlist{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+                
+                <button onclick="navigator.clipboard.writeText(window.location.href); alert('Book link copied to clipboard!');" class="p-2.5 border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl" title="Share Book">
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Middle: Book Details & Synopsis -->
+        <div class="lg:col-span-5 space-y-6">
+            <div>
+                <!-- Genres -->
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    {% for g in book.genres.all %}
+                    <a href="{% url 'books:genre_books' g.slug %}" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors">
+                        {{ g.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-bold font-serif-title text-navy-900 leading-tight">{{ book.title }}</h1>
+                <p class="text-sm text-slate-600 mt-1">
+                    By <a href="{% url 'books:author_books' book.author.slug %}" class="text-brand-600 hover:underline font-semibold">{{ book.author.name }}</a>
+                </p>
+
+                <!-- Ratings summary -->
+                <div class="flex items-center gap-2 mt-3">
+                    <div class="flex text-amber-400">
+                        {{ book.average_rating|render_stars }}
+                    </div>
+                    <span class="text-sm font-bold text-slate-800">{{ book.average_rating }}</span>
+                    <span class="text-xs text-slate-400">&bull;</span>
+                    <a href="#reviews-section" class="text-xs text-brand-600 hover:underline font-medium">{{ book.review_count }} verified reviews</a>
+                </div>
+            </div>
+
+            <!-- Synopsis -->
+            <div class="prose prose-sm text-slate-600 leading-relaxed pt-4 border-t border-slate-100">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Synopsis</h3>
+                <p class="whitespace-pre-line">{{ book.synopsis }}</p>
+            </div>
+
+            <!-- Specs Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-xs">
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Format</span>
+                    <span class="font-semibold text-slate-800">{{ book.format }}</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Pages</span>
+                    <span class="font-semibold text-slate-800">{{ book.pages }} pages</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Publisher</span>
+                    <span class="font-semibold text-slate-800 truncate block">{{ book.publisher }}</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Year</span>
+                    <span class="font-semibold text-slate-800">{{ book.publication_year }}</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Language</span>
+                    <span class="font-semibold text-slate-800">{{ book.language }}</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">ISBN</span>
+                    <span class="font-semibold text-slate-800 font-mono truncate block">{{ book.isbn }}</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Buy Box / Cart Card -->
+        <div class="lg:col-span-3">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg sticky top-28 space-y-6">
+                
+                <!-- Price -->
+                <div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-navy-900 font-serif-title">₹{{ book.effective_price }}</span>
+                        {% if book.discount_price %}
+                        <span class="text-sm text-slate-400 line-through">₹{{ book.price }}</span>
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">Save ₹{{ book.price|mul:book.discount_percentage|mul:0.01|floatformat:0 }}</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Inclusive of applicable taxes</p>
+                </div>
+
+                <!-- Stock Status -->
+                <div class="flex items-center gap-2 text-xs font-semibold">
+                    {% if book.stock > 5 %}
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-emerald-700">In Stock ({{ book.stock }} copies available)</span>
+                    {% elif book.stock > 0 %}
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
+                    <span class="text-amber-700">Only {{ book.stock }} copies left!</span>
+                    {% else %}
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                    <span class="text-rose-700">Out of Stock</span>
+                    {% endif %}
+                </div>
+
+                <!-- Purchase Forms -->
+                {% if book.in_stock %}
+                <form action="{% url 'cart:add_to_cart' book.id %}" method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="quantity" class="text-xs font-semibold text-slate-700 block mb-1">Quantity:</label>
+                        <select name="quantity" id="quantity" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= book.stock %}
+                                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <button type="submit" name="buy_now" value="false" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow-md text-sm transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i> Add to Cart
+                        </button>
+                        
+                        <button type="submit" name="buy_now" value="true" class="w-full py-3 bg-navy-900 hover:bg-navy-800 text-white font-bold rounded-xl shadow-md text-sm transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Buy Now
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <button disabled class="w-full py-3 bg-slate-200 text-slate-400 font-bold rounded-xl text-sm cursor-not-allowed">
+                    Currently Unavailable
+                </button>
+                {% endif %}
+
+                <!-- Guarantee perks -->
+                <div class="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="truck" class="w-4 h-4 text-brand-600"></i> Free standard shipping on ₹499+
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Secure mock checkout
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-brand-600"></i> AI Match Score verified
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Frequently Bought Together Bundle -->
+    {% if bundle_books|length > 1 %}
+    <div class="mt-16 bg-gradient-to-r from-slate-50 to-brand-50/40 rounded-2xl p-6 sm:p-8 border border-brand-200/80 shadow-sm">
+        <div class="flex items-center gap-2 text-brand-700 font-bold text-xs uppercase tracking-wider mb-2">
+            <i data-lucide="layers" class="w-4 h-4"></i> Market Basket Bundle Analysis
+        </div>
+        <h3 class="text-xl sm:text-2xl font-bold font-serif-title text-navy-900 mb-6">Frequently Bought Together</h3>
+
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <!-- Books Preview -->
+            <div class="flex flex-wrap items-center gap-4">
+                {% for b in bundle_books %}
+                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <img src="{{ b.get_cover_image_url }}" alt="{{ b.title }}" class="w-12 h-16 object-cover rounded shadow-sm">
+                    <div class="max-w-[150px]">
+                        <h4 class="text-xs font-bold text-slate-900 truncate">{{ b.title }}</h4>
+                        <p class="text-[11px] text-slate-500 truncate">by {{ b.author.name }}</p>
+                        <span class="text-xs font-bold text-brand-600">₹{{ b.effective_price }}</span>
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                <span class="text-xl font-bold text-slate-400">+</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Bundle Total & Add Button -->
+            <div class="text-center lg:text-right bg-white p-5 rounded-xl border border-slate-200 shadow-sm w-full lg:w-auto">
+                <div class="text-xs text-slate-500">Total Bundle Price:</div>
+                <div class="text-2xl font-bold text-navy-900 font-serif-title">₹{{ bundle_total|floatformat:2 }}</div>
+                
+                <form action="{% url 'cart:add_bundle_to_cart' %}" method="POST" class="mt-3">
+                    {% csrf_token %}
+                    {% for b in bundle_books %}
+                    <input type="hidden" name="book_ids" value="{{ b.id }}">
+                    {% endfor %}
+                    <button type="submit" class="w-full px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Add All to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Similar Books Recommendations (Content & Collaborative) -->
+    {% if similar_books %}
+    <div class="mt-16">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block">AI Matching Matrix</span>
+                <h3 class="text-2xl font-bold font-serif-title text-navy-900">Readers Also Enjoyed</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for item in similar_books %}
+            {% with rec_book=item.book %}
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="{{ rec_book.get_absolute_url }}">
+                            <img src="{{ rec_book.get_cover_image_url }}" alt="{{ rec_book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            {{ item.score|floatformat:0 }}%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation({{ rec_book.id }})" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        {{ item.reason }}
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="{{ rec_book.get_absolute_url }}">{{ rec_book.title }}</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">{{ rec_book.author.name }}</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹{{ rec_book.effective_price }}</span>
+                    <form action="{% url 'cart:add_to_cart' rec_book.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Customer Reviews & Rating Section -->
+    <div id="reviews-section" class="mt-20 pt-10 border-t border-slate-200">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Left: Reviews Breakdown & Form -->
+            <div class="lg:col-span-5 space-y-6">
+                <div>
+                    <h3 class="text-2xl font-bold font-serif-title text-navy-900">Customer Reviews</h3>
+                    <div class="flex items-center gap-3 mt-3">
+                        <div class="text-4xl font-bold font-serif-title text-navy-900">{{ book.average_rating }}</div>
+                        <div>
+                            <div class="flex text-amber-400">{{ book.average_rating|render_stars }}</div>
+                            <span class="text-xs text-slate-500">Based on {{ book.review_count }} ratings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Write a Review Form -->
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                    {% if user.is_authenticated %}
+                    <h4 class="font-bold text-sm text-navy-900 mb-1">
+                        {% if user_has_reviewed %}Edit Your Review{% else %}Write a Review{% endif %}
+                    </h4>
+                    <p class="text-xs text-slate-500 mb-4">Share your thoughts with other book lovers.</p>
+
+                    <form action="{% url 'books:add_review' book.slug %}" method="POST" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <!-- Interactive Star Rating Picker -->
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Your Rating:</label>
+                            <input type="hidden" name="rating" id="review-rating-input" value="{{ user_review.rating|default:5 }}">
+                            <div class="flex items-center space-x-1" id="star-rating-picker">
+                                {% for i in "12345"|make_list %}
+                                <button type="button" data-rating="{{ forloop.counter }}" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 {% if user_review.rating and user_review.rating >= forloop.counter %}fill-amber-400{% elif not user_review.rating and forloop.counter <= 5 %}fill-amber-400{% else %}text-slate-300{% endif %}"></i>
+                                </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1">Review Headline:</label>
+                            {{ review_form.headline }}
+                            {% if user_review %}<input type="hidden" id="headline-prefill" value="{{ user_review.headline }}">{% endif %}
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1">Detailed Review:</label>
+                            {{ review_form.body }}
+                            {% if user_review %}<input type="hidden" id="body-prefill" value="{{ user_review.body }}">{% endif %}
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow transition-colors">
+                            {% if user_has_reviewed %}Update Review{% else %}Submit Review{% endif %}
+                        </button>
+                    </form>
+
+                    {% else %}
+                    <div class="text-center py-4 space-y-3">
+                        <i data-lucide="message-square" class="w-8 h-8 text-slate-400 mx-auto"></i>
+                        <p class="text-xs text-slate-600">Please sign in to share your review and train our recommendation system.</p>
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="inline-flex items-center px-4 py-2 bg-navy-900 hover:bg-navy-800 text-white text-xs font-semibold rounded-xl">
+                            Sign In to Review
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right: List of Reviews -->
+            <div class="lg:col-span-7 space-y-4">
+                {% if reviews %}
+                    {% for rev in reviews %}
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 font-bold text-xs flex items-center justify-center">
+                                    {{ rev.user.username|slice:":2"|upper }}
+                                </div>
+                                <div>
+                                    <span class="font-bold text-xs text-slate-900 block">{{ rev.user.username }}</span>
+                                    <span class="text-[11px] text-slate-400">{{ rev.created_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <div class="flex text-amber-400">{{ rev.rating|render_stars }}</div>
+                                {% if rev.is_verified_purchase %}
+                                <span class="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <i data-lucide="badge-check" class="w-3 h-3"></i> Verified Buyer
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if rev.headline %}
+                        <h4 class="font-bold text-sm text-slate-800">{{ rev.headline }}</h4>
+                        {% endif %}
+                        <p class="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{{ rev.body }}</p>
+
+                        <div class="pt-2 flex items-center justify-between text-xs text-slate-400 border-t border-slate-50">
+                            <span>Helpful review?</span>
+                            <form action="{% url 'books:vote_review' rev.id %}" method="POST" onsubmit="event.preventDefault(); fetch(this.action, {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}}).then(r=>r.json()).then(d=>{if(d.status==='success') this.querySelector('.vote-count').textContent=d.helpful_votes;});">
+                                {% csrf_token %}
+                                <button type="submit" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-[11px]">
+                                    <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Helpful (<span class="vote-count font-semibold">{{ rev.helpful_votes }}</span>)
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-2">
+                    <i data-lucide="star" class="w-8 h-8 text-amber-400 mx-auto"></i>
+                    <h4 class="font-bold text-sm text-navy-900">Be the first to review this book!</h4>
+                    <p class="text-xs text-slate-500">Your review helps other readers discover great literature.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Interactive Star Picker
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('review-rating-input');
+
+    if (starBtns.length > 0 && ratingInput) {
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingInput.value = rating;
+                updateStarDisplay(rating);
+            });
+        });
+
+        function updateStarDisplay(val) {
+            starBtns.forEach(btn => {
+                const r = parseInt(btn.getAttribute('data-rating'));
+                const icon = btn.querySelector('svg') || btn.querySelector('i');
+                if (r <= val) {
+                    btn.innerHTML = '<i data-lucide="star" class="w-6 h-6 fill-amber-400 text-amber-400"></i>';
+                } else {
+                    btn.innerHTML = '<i data-lucide="star" class="w-6 h-6 text-slate-300"></i>';
+                }
+            });
+            lucide.createIcons();
+        }
+    }
+
+    // Prefill form if editing existing review
+    const headlinePrefill = document.getElementById('headline-prefill');
+    const bodyPrefill = document.getElementById('body-prefill');
+    if (headlinePrefill) {
+        const headlineField = document.querySelector('input[name="headline"]');
+        if (headlineField && !headlineField.value) headlineField.value = headlinePrefill.value;
+    }
+    if (bodyPrefill) {
+        const bodyField = document.querySelector('textarea[name="body"]');
+        if (bodyField && !bodyField.value) bodyField.value = bodyPrefill.value;
+    }
+</script>
+{% endblock %}

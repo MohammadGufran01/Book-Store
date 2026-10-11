@@ -1,0 +1,662 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}Executive Management & Analytics | Reader's Haven{% endblock %}
+
+{% block content %}
+<!-- Classic Executive Header Banner -->
+<div class="bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 text-white border-b border-amber-500/20 py-10 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[11px] font-bold uppercase tracking-widest">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i> Executive Control Center
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">Live Telemetry &bull; INR ₹ Mode</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-bold font-serif-title tracking-tight text-slate-100">Store Management & Analytics</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    Comprehensive oversight of sales revenue, multi-strategy machine learning signals, inventory fulfillment, and customer reading behavior.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <form action="{% url 'analytics:trigger_matrix_sync' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 hover:border-amber-400 font-bold rounded-xl text-xs flex items-center gap-2 shadow transition-all">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Re-Sync AI Matrix
+                    </button>
+                </form>
+
+                <a href="{% url 'admin:index' %}" target="_blank" class="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-amber-600 hover:from-brand-500 hover:to-amber-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-amber-900/20 transition-all">
+                    <i data-lucide="settings" class="w-3.5 h-3.5"></i> Django Admin &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Container -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI Metric Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        
+        <!-- Total Revenue -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Gross Sales</span>
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">₹</div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">₹{{ total_revenue|floatformat:2 }}</div>
+            <p class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+                <i data-lucide="trending-up" class="w-3 h-3"></i> {{ total_orders }} Orders
+            </p>
+        </div>
+
+        <!-- Total Books Sold -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Units Sold</span>
+                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><i data-lucide="book-check" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">{{ total_books_sold }}</div>
+            <p class="text-[11px] text-slate-500 font-medium">{{ total_books_in_catalog }} titles active</p>
+        </div>
+
+        <!-- Average Order Value (AOV) -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Average Order</span>
+                <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><i data-lucide="shopping-cart" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">₹{{ aov|floatformat:0 }}</div>
+            <p class="text-[11px] text-amber-700 font-medium">AOV per checkout</p>
+        </div>
+
+        <!-- Active Customers -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Registered Readers</span>
+                <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">{{ total_customers }}</div>
+            <p class="text-[11px] text-purple-600 font-medium">Active profiles</p>
+        </div>
+
+        <!-- Average Rating -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Catalog Rating</span>
+                <div class="w-8 h-8 rounded-lg bg-rose-50 text-amber-500 flex items-center justify-center"><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i></div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">{{ catalog_avg_rating }}★</div>
+            <p class="text-[11px] text-slate-500 font-medium">{{ total_reviews }} reviews</p>
+        </div>
+
+        <!-- ML Interactions -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-1 hover:border-amber-300 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-1">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">AI Signals</span>
+                <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><i data-lucide="sparkles" class="w-4 h-4"></i></div>
+            </div>
+            <div class="text-2xl font-bold font-serif-title text-navy-950">{{ total_interactions }}</div>
+            <p class="text-[11px] text-brand-600 font-medium">Telemetry events</p>
+        </div>
+
+    </div>
+
+    <!-- Dashboard Classic Tab Navigation -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-1.5 flex flex-wrap items-center gap-1">
+        <a href="?tab=overview" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'overview' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Executive Overview
+        </a>
+        <a href="?tab=orders" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'orders' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="package" class="w-4 h-4"></i> Orders & Fulfillment ({{ recent_orders.count }})
+        </a>
+        <a href="?tab=inventory" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'inventory' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="boxes" class="w-4 h-4"></i> Catalog & Inventory ({{ all_books.count }})
+        </a>
+        <a href="?tab=ml_telemetry" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'ml_telemetry' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Recommendation Engine Telemetry
+        </a>
+        <a href="?tab=customers" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'customers' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="users" class="w-4 h-4"></i> Reader Profiles & Goals
+        </a>
+        <a href="?tab=coupons" class="px-4 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 {% if active_tab == 'coupons' %}bg-navy-950 text-amber-400 shadow-sm{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}">
+            <i data-lucide="ticket" class="w-4 h-4"></i> Promotions & Discounts
+        </a>
+    </div>
+
+    <!-- TAB 1: EXECUTIVE OVERVIEW -->
+    {% if active_tab == 'overview' %}
+    <div class="space-y-8">
+        
+        <!-- Top Row: Top Selling Titles & Sales by Genre -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Best-Selling Titles -->
+            <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                            <i data-lucide="trophy" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-navy-950 font-serif-title">Top Revenue Performing Titles</h3>
+                            <p class="text-[11px] text-slate-500">Highest grossing books across all completed checkouts</p>
+                        </div>
+                    </div>
+                    <a href="?tab=inventory" class="text-xs font-semibold text-brand-600 hover:underline">View All &rarr;</a>
+                </div>
+
+                <div class="divide-y divide-slate-100">
+                    {% for item in top_selling %}
+                    <div class="py-3 flex items-center justify-between text-xs hover:bg-slate-50/50 transition-colors rounded-lg px-2">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-navy-950 text-amber-400 font-bold flex items-center justify-center text-[11px]">{{ forloop.counter }}</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm font-serif-title">{{ item.book__title }}</h4>
+                                <p class="text-[11px] text-slate-500">by {{ item.book__author__name }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-slate-900 text-sm block">{{ item.units_sold }} copies</span>
+                            <span class="text-[11px] text-emerald-600 font-semibold font-mono">₹{{ item.revenue|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-slate-400 py-4 text-center">No sales recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sales Distribution by Literary Genre -->
+            <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-navy-950 font-serif-title">Genre Sales Distribution</h3>
+                            <p class="text-[11px] text-slate-500">Demand breakdown by reader categories</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3.5 pt-1">
+                    {% for g in genre_sales %}
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between font-medium">
+                            <span class="text-slate-800 flex items-center gap-1.5">
+                                <i data-lucide="{{ g.icon|default:'book' }}" class="w-3.5 h-3.5 text-brand-600"></i> {{ g.genre }}
+                            </span>
+                            <span class="font-bold text-slate-900 font-mono">{{ g.count }} copies ({{ g.percentage }}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-r from-brand-600 to-amber-500 h-full rounded-full transition-all duration-500" style="width: {{ g.percentage }}%;"></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-slate-400 py-4 text-center">No category data available yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Middle Row: Low Stock Warnings & Top Rated Titles -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Low Stock Warnings -->
+            <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-navy-950 font-serif-title">Low Stock Inventory Warnings</h3>
+                            <p class="text-[11px] text-slate-500">Titles with 5 or fewer copies remaining</p>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Needs Replenishment</span>
+                </div>
+
+                {% if low_stock_books %}
+                <div class="divide-y divide-slate-100">
+                    {% for b in low_stock_books %}
+                    <div class="py-2.5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ b.get_cover_image_url }}" alt="{{ b.title }}" class="w-8 h-11 object-cover rounded shadow-sm">
+                            <div>
+                                <h4 class="font-bold text-slate-900">{{ b.title }}</h4>
+                                <p class="text-[11px] text-slate-400">by {{ b.author.name }} &bull; ₹{{ b.effective_price }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold font-mono text-rose-700 bg-rose-100 px-2.5 py-1 rounded-lg">
+                                {{ b.stock }} left
+                            </span>
+                            <form action="{% url 'analytics:update_stock' b.id %}" method="POST" class="flex items-center gap-1">
+                                {% csrf_token %}
+                                <input type="hidden" name="stock" value="{{ b.stock|add:10 }}">
+                                <button type="submit" class="px-2 py-1 bg-slate-900 hover:bg-brand-600 text-white rounded text-[11px] font-semibold transition-colors" title="Quick add +10 copies">
+                                    +10
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-8 text-xs text-slate-500">
+                    <i data-lucide="check-circle" class="w-8 h-8 text-emerald-500 mx-auto mb-1"></i>
+                    All catalog titles are well-stocked!
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Top Rated Books (Bayesian & Reviews) -->
+            <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <i data-lucide="star" class="w-4 h-4 fill-amber-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-base text-navy-950 font-serif-title">Highest Rated by Readers</h3>
+                            <p class="text-[11px] text-slate-500">Verified reader satisfaction scores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-slate-100">
+                    {% for b in top_rated %}
+                    <div class="py-2.5 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ b.get_cover_image_url }}" alt="{{ b.title }}" class="w-8 h-11 object-cover rounded shadow-sm">
+                            <div>
+                                <h4 class="font-bold text-slate-900 font-serif-title">{{ b.title }}</h4>
+                                <p class="text-[11px] text-slate-400">by {{ b.author.name }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center gap-1 text-amber-500 font-bold">
+                                <span>{{ b.average_rating }}★</span>
+                            </div>
+                            <span class="text-[11px] text-slate-400">({{ b.review_count }} reviews)</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-xs text-slate-400 py-4 text-center">No reviews submitted yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    <!-- TAB 2: ORDERS & FULFILLMENT -->
+    {% if active_tab == 'orders' %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+        <div class="p-6 pb-2 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-bold font-serif-title text-navy-950">Live Order Fulfillment & Transactions</h3>
+                <p class="text-xs text-slate-500">View real-time customer checkouts, simulated payment receipts, and update delivery fulfillment status.</p>
+            </div>
+            <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg">{{ recent_orders.count }} Total Orders</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4">Order #</th>
+                        <th class="py-3.5 px-4">Customer</th>
+                        <th class="py-3.5 px-4">Items</th>
+                        <th class="py-3.5 px-4">Total Amount (₹)</th>
+                        <th class="py-3.5 px-4">Payment</th>
+                        <th class="py-3.5 px-4">Date</th>
+                        <th class="py-3.5 px-4">Status</th>
+                        <th class="py-3.5 px-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for ord in recent_orders %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
+                            <a href="{{ ord.get_absolute_url }}" class="text-brand-600 hover:underline">{{ ord.order_number }}</a>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="font-bold text-slate-800 block">{{ ord.full_name }}</span>
+                            <span class="text-[11px] text-slate-400">{{ ord.city }}, {{ ord.country }}</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="font-medium text-slate-700">{{ ord.total_items_count }} books</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-bold font-mono text-slate-900">
+                            ₹{{ ord.total_amount }}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="capitalize text-slate-600">{{ ord.get_payment_method_display }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500">
+                            {{ ord.created_at|date:"M d, Y" }}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="inline-flex text-[11px] font-bold px-2.5 py-0.5 rounded-full {% if ord.status == 'Delivered' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% elif ord.status == 'Cancelled' %}bg-rose-50 text-rose-700 border border-rose-200{% else %}bg-amber-50 text-amber-700 border border-amber-200{% endif %}">
+                                {{ ord.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right">
+                            <form action="{% url 'analytics:update_order_status' ord.id %}" method="POST" class="inline-flex items-center gap-1.5">
+                                {% csrf_token %}
+                                <select name="status" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-[11px] font-medium rounded-lg px-2 py-1 focus:ring-1 focus:ring-brand-500">
+                                    {% for code, label in status_choices %}
+                                    <option value="{{ code }}" {% if ord.status == code %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-8 text-slate-400">No customer orders recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- TAB 3: CATALOG & INVENTORY -->
+    {% if active_tab == 'inventory' %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+        <div class="p-6 pb-2 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-bold font-serif-title text-navy-950">Catalog & Real-time Stock Inventory</h3>
+                <p class="text-xs text-slate-500">Monitor warehouse copies, update inventory thresholds, and verify book pricing in Indian Rupees.</p>
+            </div>
+            <a href="{% url 'admin:books_book_add' %}" target="_blank" class="px-3.5 py-1.5 bg-navy-950 text-amber-400 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-slate-800 transition-colors">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add New Book
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4">Book Title</th>
+                        <th class="py-3.5 px-4">Author</th>
+                        <th class="py-3.5 px-4">Genre</th>
+                        <th class="py-3.5 px-4">Price (₹)</th>
+                        <th class="py-3.5 px-4">Format</th>
+                        <th class="py-3.5 px-4">Stock Status</th>
+                        <th class="py-3.5 px-4 text-right">Quick Stock Adjustment</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for b in all_books %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ b.get_cover_image_url }}" alt="{{ b.title }}" class="w-8 h-11 object-cover rounded shadow-sm">
+                                <div>
+                                    <a href="{{ b.get_absolute_url }}" class="font-bold text-slate-900 hover:text-brand-600 font-serif-title">{{ b.title }}</a>
+                                    {% if b.is_bestseller %}<span class="text-[9px] bg-orange-500 text-white px-1.5 py-0.2 rounded ml-1 font-bold">Bestseller</span>{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-700 font-medium">{{ b.author.name }}</td>
+                        <td class="py-3 px-4">
+                            <span class="text-slate-600">{{ b.genres.first.name|default:'General' }}</span>
+                        </td>
+                        <td class="py-3 px-4 font-bold font-mono text-slate-900">
+                            ₹{{ b.effective_price }}
+                            {% if b.discount_price %}
+                            <span class="text-[10px] text-slate-400 line-through block font-normal">₹{{ b.price }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">{{ b.format }}</td>
+                        <td class="py-3 px-4">
+                            {% if b.stock <= 5 %}
+                            <span class="inline-flex items-center gap-1 font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]">
+                                <i data-lucide="alert-triangle" class="w-3 h-3"></i> {{ b.stock }} left
+                            </span>
+                            {% else %}
+                            <span class="font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded text-[11px]">
+                                {{ b.stock }} in stock
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <form action="{% url 'analytics:update_stock' b.id %}" method="POST" class="inline-flex items-center gap-1">
+                                {% csrf_token %}
+                                <input type="number" name="stock" value="{{ b.stock }}" min="0" max="999" class="w-16 px-2 py-1 border border-slate-300 rounded-lg text-xs text-center font-bold">
+                                <button type="submit" class="px-2.5 py-1 bg-navy-900 hover:bg-brand-600 text-white rounded-lg text-xs font-semibold transition-colors">
+                                    Save
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- TAB 4: ML & RECOMMENDATION TELEMETRY -->
+    {% if active_tab == 'ml_telemetry' %}
+    <div class="space-y-8">
+        
+        <!-- Algorithm Status Strip -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-600 block mb-1">Pillar 1: Content NLP</span>
+                <h4 class="text-lg font-bold font-serif-title text-navy-950">TF-IDF Vectorizer</h4>
+                <p class="text-[11px] text-slate-500 mt-1">N-Gram (1-2), sublinear tf, cosine similarity on book synopses & genres</p>
+                <div class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    <i data-lucide="check" class="w-3 h-3"></i> Matrix Operational
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 block mb-1">Pillar 2: Collaborative</span>
+                <h4 class="text-lg font-bold font-serif-title text-navy-950">User-User CF</h4>
+                <p class="text-[11px] text-slate-500 mt-1">Explicit (1-5★) + Implicit (purchases, wishlist, carts) interaction matrix</p>
+                <div class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    <i data-lucide="check" class="w-3 h-3"></i> Matrix Operational
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-600 block mb-1">Pillar 3: Confidence Smoothing</span>
+                <h4 class="text-lg font-bold font-serif-title text-navy-950">Bayesian Rating</h4>
+                <p class="text-[11px] text-slate-500 mt-1">Weighted rating formula preventing small sample bias in bestsellers</p>
+                <div class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    <i data-lucide="check" class="w-3 h-3"></i> Active (m=3.0, C=4.5)
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block mb-1">Pillar 4: Basket Association</span>
+                <h4 class="text-lg font-bold font-serif-title text-navy-950">Market Basket Pairs</h4>
+                <p class="text-[11px] text-slate-500 mt-1">Co-occurrence frequency matrix powering 1-click bundle offers</p>
+                <div class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    <i data-lucide="check" class="w-3 h-3"></i> Co-occurrence Active
+                </div>
+            </div>
+        </div>
+
+        <!-- Telemetry Signals Breakdown -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                    <h3 class="text-lg font-bold font-serif-title text-navy-950">Real-Time Interaction Event Telemetry</h3>
+                    <p class="text-xs text-slate-500">Breakdown of reader engagements logged to fine-tune recommendation predictions.</p>
+                </div>
+                <span class="font-mono text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-lg border border-brand-200">{{ total_interactions }} Total Signals</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {% for stat in interaction_stats %}
+                <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs capitalize text-slate-800">{{ stat.interaction_type }}</span>
+                        <span class="text-[10px] font-bold text-slate-500 font-mono">{{ stat.percent }}%</span>
+                    </div>
+                    <div class="text-2xl font-bold font-serif-title text-navy-950">{{ stat.total }}</div>
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full {% if stat.interaction_type == 'purchase' %}bg-emerald-500{% elif stat.interaction_type == 'cart' %}bg-brand-500{% elif stat.interaction_type == 'rate' %}bg-amber-500{% elif stat.interaction_type == 'wishlist' %}bg-rose-500{% else %}bg-blue-500{% endif %}" style="width: {{ stat.percent }}%;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    <!-- TAB 5: CUSTOMER INSIGHTS -->
+    {% if active_tab == 'customers' %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+        <div class="p-6 pb-2 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-bold font-serif-title text-navy-950">Reader Profiles & Annual Reading Challenges</h3>
+                <p class="text-xs text-slate-500">Monitor reader engagement, annual reading goal milestones, and review contributions.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4">Reader</th>
+                        <th class="py-3.5 px-4">Email</th>
+                        <th class="py-3.5 px-4">Reading Challenge Progress</th>
+                        <th class="py-3.5 px-4">Orders Placed</th>
+                        <th class="py-3.5 px-4">Reviews Left</th>
+                        <th class="py-3.5 px-4">Favorite Genres</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for reader in customers_list %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-navy-950 text-amber-400 font-bold flex items-center justify-center text-xs">
+                                    {{ reader.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <span class="font-bold text-slate-900 block">{{ reader.get_full_name|default:reader.username }}</span>
+                                    <span class="text-[10px] text-slate-400 font-mono">@{{ reader.username }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-600 font-mono text-[11px]">{{ reader.email|default:"reader@example.com" }}</td>
+                        <td class="py-3.5 px-4">
+                            {% if reader.profile %}
+                            <div class="space-y-1 w-40">
+                                <div class="flex justify-between text-[11px]">
+                                    <span class="font-bold text-slate-800">{{ reader.profile.books_read_count }} / {{ reader.profile.reading_goal }} books</span>
+                                    <span class="text-brand-600 font-bold font-mono">{{ reader.profile.reading_goal_progress_percent }}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-brand-600 to-amber-500 h-full rounded-full" style="width: {{ reader.profile.reading_goal_progress_percent }}%;"></div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-slate-400 text-[11px]">No goal set</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 font-bold text-slate-900">{{ reader.orders_placed }} orders</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-900">{{ reader.reviews_written }} reviews</td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex flex-wrap gap-1">
+                                {% for g in reader.profile.favorite_genres.all %}
+                                <span class="bg-slate-100 text-slate-700 text-[10px] px-1.5 py-0.5 rounded font-medium">{{ g.name }}</span>
+                                {% empty %}
+                                <span class="text-slate-400 text-[11px]">All Genres</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- TAB 6: PROMOTIONS & COUPONS -->
+    {% if active_tab == 'coupons' %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4">
+        <div class="p-6 pb-2 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-bold font-serif-title text-navy-950">Active Promo Codes & Marketing Discounts</h3>
+                <p class="text-xs text-slate-500">Manage promo coupon codes, minimum spend thresholds, and discount structures.</p>
+            </div>
+            <a href="{% url 'admin:cart_coupon_add' %}" target="_blank" class="px-3.5 py-1.5 bg-navy-950 text-amber-400 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-slate-800 transition-colors">
+                <i data-lucide="plus" class="w-4 h-4"></i> Create New Coupon
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+                    <tr>
+                        <th class="py-3.5 px-4">Coupon Code</th>
+                        <th class="py-3.5 px-4">Discount Value</th>
+                        <th class="py-3.5 px-4">Minimum Spend (₹)</th>
+                        <th class="py-3.5 px-4">Status</th>
+                        <th class="py-3.5 px-4">Created Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for c in active_coupons %}
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <td class="py-3.5 px-4">
+                            <span class="font-mono font-bold text-navy-950 bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-lg text-xs">{{ c.code }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-bold text-slate-800">
+                            {% if c.discount_percent > 0 %}
+                            {{ c.discount_percent }}% OFF Entire Cart
+                            {% else %}
+                            ₹{{ c.discount_amount }} Instant Discount
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 font-mono text-slate-700">
+                            {% if c.min_spend > 0 %}₹{{ c.min_spend }}{% else %}No minimum{% endif %}
+                        </td>
+                        <td class="py-3.5 px-4">
+                            {% if c.active %}
+                            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">Active</span>
+                            {% else %}
+                            <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500">{{ c.created_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

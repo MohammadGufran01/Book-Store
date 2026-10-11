@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}Order Confirmed #{{ order.order_number }} | Reader's Haven{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    
+    <!-- Success Banner -->
+    <div class="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl text-center space-y-4 mb-8">
+        <div class="w-20 h-20 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center mx-auto shadow-inner animate-bounce">
+            <i data-lucide="check-circle-2" class="w-10 h-10"></i>
+        </div>
+        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full uppercase tracking-wider">
+            Order Successfully Placed
+        </span>
+        <h1 class="text-3xl sm:text-4xl font-bold font-serif-title text-navy-900">Thank You for Your Order!</h1>
+        <p class="text-sm text-slate-600 max-w-md mx-auto">
+            We've received your order and are getting your books ready for shipment. A confirmation email has been dispatched.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 pt-2 text-xs">
+            <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                <span class="text-slate-400 block">Order Number</span>
+                <strong class="text-slate-900 font-mono text-sm">{{ order.order_number }}</strong>
+            </div>
+            <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                <span class="text-slate-400 block">Transaction ID</span>
+                <strong class="text-slate-900 font-mono text-sm">{{ order.transaction_id }}</strong>
+            </div>
+            <div class="bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                <span class="text-slate-400 block">Payment Method</span>
+                <strong class="text-slate-900 text-sm capitalize">{{ order.get_payment_method_display }}</strong>
+            </div>
+        </div>
+
+        <!-- Print Action -->
+        <div class="pt-4 no-print flex justify-center gap-3">
+            <button onclick="window.print()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs flex items-center gap-2 transition-colors">
+                <i data-lucide="printer" class="w-4 h-4"></i> Print Receipt / Invoice
+            </button>
+            <a href="{% url 'recommendations:for_you' %}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow transition-colors">
+                <i data-lucide="sparkles" class="w-4 h-4"></i> See Updated AI Feed
+            </a>
+        </div>
+    </div>
+
+    <!-- Order Timeline / Tracking -->
+    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-8 space-y-6">
+        <h3 class="font-bold text-sm text-navy-900 font-serif-title uppercase tracking-wider text-slate-400">Estimated Delivery Status</h3>
+        
+        <div class="grid grid-cols-4 gap-2 text-center text-xs">
+            <div class="space-y-1.5">
+                <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto"><i data-lucide="check" class="w-4 h-4"></i></div>
+                <span class="font-bold text-slate-900 block">Order Placed</span>
+                <span class="text-[10px] text-slate-400">Confirmed</span>
+            </div>
+            <div class="space-y-1.5">
+                <div class="w-8 h-8 rounded-full bg-brand-500 text-navy-950 flex items-center justify-center mx-auto font-bold">2</div>
+                <span class="font-bold text-brand-700 block">Processing</span>
+                <span class="text-[10px] text-brand-600">Packaging items</span>
+            </div>
+            <div class="space-y-1.5 opacity-40">
+                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center mx-auto">3</div>
+                <span class="font-medium text-slate-600 block">Shipped</span>
+                <span class="text-[10px] text-slate-400">In Transit</span>
+            </div>
+            <div class="space-y-1.5 opacity-40">
+                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center mx-auto">4</div>
+                <span class="font-medium text-slate-600 block">Delivered</span>
+                <span class="text-[10px] text-slate-400">Arrives in 2-3 days</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Itemized Invoice Details -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <h3 class="text-base font-bold text-navy-900 font-serif-title">Itemized Order Summary</h3>
+            <span class="text-xs text-slate-500">{{ items.count }} unique titles</span>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+            {% for item in items %}
+            <div class="py-3 flex items-center justify-between gap-4 text-xs">
+                <div class="flex items-center gap-3">
+                    {% if item.book %}
+                    <img src="{{ item.book.get_cover_image_url }}" alt="{{ item.book_title }}" class="w-10 h-14 object-cover rounded shadow-sm">
+                    {% endif %}
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">{{ item.book_title }}</h4>
+                        <p class="text-slate-500 text-[11px]">by {{ item.book_author }} &bull; Qty: {{ item.quantity }}</p>
+                    </div>
+                </div>
+                <span class="font-bold text-slate-900 text-sm">₹{{ item.total_price }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Receipt Financials -->
+        <div class="bg-slate-50 p-4 rounded-xl space-y-2 text-xs border border-slate-200/60">
+            <div class="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span>₹{{ order.subtotal }}</span>
+            </div>
+            {% if order.discount_amount > 0 %}
+            <div class="flex justify-between text-emerald-600">
+                <span>Discount applied</span>
+                <span>-₹{{ order.discount_amount }}</span>
+            </div>
+            {% endif %}
+            <div class="flex justify-between text-slate-600">
+                <span>Shipping Fee</span>
+                <span>₹{{ order.shipping_fee }}</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+                <span>Estimated Tax (5% GST)</span>
+                <span>₹{{ order.tax_amount }}</span>
+            </div>
+            <div class="flex justify-between text-base font-bold text-navy-900 border-t border-slate-200 pt-2">
+                <span>Total Paid</span>
+                <span class="text-brand-600 font-serif-title">₹{{ order.total_amount }}</span>
+            </div>
+        </div>
+
+        <!-- Shipping Destination -->
+        <div class="pt-2 text-xs text-slate-600 space-y-1">
+            <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Shipping Destination:</h4>
+            <p>{{ order.full_name }} &bull; {{ order.phone }}</p>
+            <p>{{ order.address_line1 }}{% if order.address_line2 %}, {{ order.address_line2 }}{% endif %}</p>
+            <p>{{ order.city }}, {{ order.state }} {{ order.postal_code }}, {{ order.country }}</p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}My Profile & Reading Goals | Reader's Haven{% endblock %}
+
+{% block content %}
+<div class="bg-slate-50 py-8 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl font-bold font-serif-title text-navy-900">Reader Dashboard & Profile</h1>
+        <p class="text-xs text-slate-500 mt-1">Manage your reading goal, personal details, and AI genre preferences</p>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: User Identity & Reading Goal Tracker -->
+        <div class="lg:col-span-4 space-y-6">
+            
+            <!-- User Card -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center space-y-4">
+                <div class="relative inline-block">
+                    <img src="{{ profile.avatar_url|default:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200' }}" 
+                         alt="{{ user.username }}" 
+                         class="w-24 h-24 rounded-full object-cover border-4 border-brand-100 shadow-md mx-auto">
+                    <span class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white" title="Active Account">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    </span>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold font-serif-title text-navy-900">{{ user.first_name }} {{ user.last_name }}</h2>
+                    <p class="text-xs font-semibold text-brand-600">@{{ user.username }}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">{{ user.email }}</p>
+                    {% if profile.bio %}
+                    <p class="text-xs text-slate-600 mt-2 italic bg-slate-50 p-2.5 rounded-xl">{{ profile.bio }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Reading Goal Gamification Card -->
+            <div class="bg-gradient-to-br from-navy-900 to-slate-900 text-white rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-brand-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i> 2026 Reading Challenge
+                    </span>
+                    <span class="text-xs text-slate-400">{{ profile.goal_progress_percent }}% Complete</span>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-3xl font-bold font-serif-title text-white">{{ profile.books_read_count }}</span>
+                        <span class="text-xs text-slate-400">Target: {{ profile.reading_goal }} books</span>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                        <div class="h-full bg-gradient-to-r from-brand-400 to-amber-300 rounded-full transition-all duration-500" style="width: {{ profile.goal_progress_percent }}%;"></div>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                    {% if profile.books_read_count >= profile.reading_goal %}
+                    🎉 Congratulations! You smashed your reading goal for this year!
+                    {% else %}
+                    You are {{ profile.reading_goal|add:"-1"|mul:1 }} books away from reaching your annual milestone! Keep exploring.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2 text-xs font-semibold">
+                <a href="{% url 'orders:order_history' %}" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-700">
+                    <span class="flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 text-slate-400"></i> Order History</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </a>
+                <a href="{% url 'cart:wishlist' %}" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-700">
+                    <span class="flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 text-slate-400"></i> Reading Wishlist</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                </a>
+                <a href="{% url 'recommendations:for_you' %}" class="flex items-center justify-between p-3 rounded-xl hover:bg-brand-50 text-brand-700">
+                    <span class="flex items-center gap-2"><i data-lucide="sparkles" class="w-4 h-4 text-brand-500"></i> Personalized AI Feed</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-brand-500"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Right: Edit Profile & Reading Preferences Form -->
+        <div class="lg:col-span-8 space-y-8">
+            
+            <form method="POST" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+                {% csrf_token %}
+
+                <!-- Section 1: Personal Info -->
+                <div>
+                    <h3 class="text-lg font-bold font-serif-title text-navy-900 pb-3 border-b border-slate-100 mb-4">Personal Details</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Email Address</label>
+                            {{ user_form.email }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Phone Number</label>
+                            {{ profile_form.phone_number }}
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="font-semibold text-slate-700 block mb-1">Avatar Image URL</label>
+                            {{ profile_form.avatar_url }}
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="font-semibold text-slate-700 block mb-1">Reader Bio</label>
+                            {{ profile_form.bio }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Annual Reading Goal (Books)</label>
+                            {{ profile_form.reading_goal }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: AI Recommendation Preferences (Favorite Genres) -->
+                <div>
+                    <div class="pb-3 border-b border-slate-100 mb-4">
+                        <div class="flex items-center gap-2 text-brand-600 font-bold text-xs uppercase tracking-wider mb-1">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> AI Cold-Start & Interest Profiler
+                        </div>
+                        <h3 class="text-lg font-bold font-serif-title text-navy-900">Your Favorite Literary Genres</h3>
+                        <p class="text-xs text-slate-500">Select the genres you love. Our recommendation engine uses this to curate your personalized homepage and discovery feeds.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {% for choice in profile_form.favorite_genres %}
+                        <label class="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-brand-400 cursor-pointer text-xs font-semibold text-slate-800 transition-colors">
+                            {{ choice.tag }}
+                            <span>{{ choice.choice_label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Section 3: Default Shipping Address -->
+                <div>
+                    <h3 class="text-lg font-bold font-serif-title text-navy-900 pb-3 border-b border-slate-100 mb-4">Default Delivery Address</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="sm:col-span-2">
+                            <label class="font-semibold text-slate-700 block mb-1">Address Line 1</label>
+                            {{ profile_form.address_line1 }}
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="font-semibold text-slate-700 block mb-1">Address Line 2</label>
+                            {{ profile_form.address_line2 }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">City</label>
+                            {{ profile_form.city }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">State / Province</label>
+                            {{ profile_form.state }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Postal / ZIP Code</label>
+                            {{ profile_form.postal_code }}
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700 block mb-1">Country</label>
+                            {{ profile_form.country }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i> Save Profile & Preferences
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

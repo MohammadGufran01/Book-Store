@@ -1,0 +1,1137 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The French Illusion by John Grisham | Reader's Haven</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fbf7ee',
+                            100: '#f5ebd3',
+                            200: '#edd6a6',
+                            300: '#e3bc74',
+                            400: '#d9a147',
+                            500: '#c58525',
+                            600: '#a7661d',
+                            700: '#864b1b',
+                            800: '#6f3c1c',
+                            900: '#5c321b',
+                            950: '#34180c',
+                        },
+                        navy: {
+                            800: '#0f172a',
+                            900: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        .font-serif-title { font-family: 'Playfair Display', serif; }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .form-input {
+            width: 100%;
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .form-input:focus {
+            border-color: #c58525;
+            box-shadow: 0 0 0 3px rgba(197, 133, 37, 0.15);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+    
+</head>
+<body class="flex flex-col min-h-full text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Announcement Bar -->
+    <aside aria-label="Announcement" class="no-print bg-navy-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                    <i data-lucide="sparkles" class="w-3 h-3 mr-1 text-brand-300"></i> AI Powered Recommendations
+                </span>
+                <span>Free express shipping on all orders over ₹499! Use code <strong class="text-brand-300 tracking-wider">BOOKWORM15</strong> for 15% off</span>
+            </div>
+            <div class="flex items-center space-x-4 text-slate-400">
+                
+                    <span class="text-slate-300">Hello, <strong class="text-white">Store</strong></span>
+                    
+                        <a href="/analytics/dashboard/" class="hover:text-brand-300 flex items-center gap-1"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Store Manager</a>
+                    
+                
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Navigation Header -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-4">
+                
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-3">
+                    <a href="/" class="flex items-center gap-2.5 group">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
+                            <i data-lucide="book-open-check" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-bold tracking-tight font-serif-title text-navy-900 block leading-tight">Reader's<span class="text-brand-600">Haven</span></span>
+                            <span class="text-[10px] tracking-widest text-slate-400 uppercase font-semibold block">Books & Smart Recommendations</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Live Search Bar -->
+                <div class="flex-1 max-w-2xl relative">
+                    <form action="/books/" method="GET" class="relative flex items-center">
+                        <div class="relative w-full">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i data-lucide="search" class="w-5 h-5"></i>
+                            </div>
+                            <input type="text" 
+                                   id="global-search-input"
+                                   name="q" 
+                                   value=""
+                                   placeholder="Search by title, author, genre, or keyword..."
+                                   autocomplete="off"
+                                   class="w-full pl-11 pr-12 py-2.5 bg-slate-100/80 border border-slate-300/80 rounded-xl text-sm placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all">
+                            
+                        </div>
+                    </form>
+                    <!-- Live Search Dropdown -->
+                    <div id="search-autocomplete-box" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50 divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- Right Action Icons -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    
+                    <!-- AI For You Link -->
+                    <a href="/recommendations/for-you/" class="relative inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-brand-700 bg-brand-50 hover:bg-brand-100/80 border border-brand-200/60 transition-colors">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-brand-500 animate-pulse"></i>
+                        <span class="hidden sm:inline">For You</span>
+                    </a>
+
+                    <!-- Wishlist -->
+                    <a href="/cart/wishlist/" class="relative p-2.5 text-slate-600 hover:text-navy-900 rounded-lg hover:bg-slate-100 transition-colors" title="Wishlist">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                        
+                    </a>
+
+                    <!-- Cart -->
+                    <a href="/cart/" class="relative p-2.5 text-slate-600 hover:text-navy-900 rounded-lg hover:bg-slate-100 transition-colors" title="Shopping Cart">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        
+                    </a>
+
+                    <!-- User Profile Dropdown -->
+                    
+                    <div class="relative group">
+                        <button class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="admin" 
+                                 class="w-9 h-9 rounded-full object-cover border border-slate-200">
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-hover:text-slate-600"></i>
+                        </button>
+                        
+                        <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-100 py-2 hidden group-hover:block hover:block z-50 divide-y divide-slate-100">
+                            <div class="px-4 py-2.5">
+                                <p class="text-xs text-slate-400 font-medium">Signed in as</p>
+                                <p class="text-sm font-semibold text-navy-900 truncate">Store</p>
+                                <p class="text-xs text-slate-500 truncate">admin@readershaven.com</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="/accounts/profile/" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                    <i data-lucide="user" class="w-4 h-4 mr-2.5 text-slate-400"></i> My Profile & Goals
+                                </a>
+                                <a href="/recommendations/for-you/" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                    <i data-lucide="sparkles" class="w-4 h-4 mr-2.5 text-brand-500"></i> AI Recommendations
+                                </a>
+                                <a href="/orders/history/" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                    <i data-lucide="package" class="w-4 h-4 mr-2.5 text-slate-400"></i> Order History
+                                </a>
+                                <a href="/cart/wishlist/" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                    <i data-lucide="heart" class="w-4 h-4 mr-2.5 text-slate-400"></i> Wishlist
+                                </a>
+                                
+                                <a href="/analytics/dashboard/" class="flex items-center px-4 py-2 text-sm text-amber-700 bg-amber-50/50 hover:bg-amber-50">
+                                    <i data-lucide="bar-chart-3" class="w-4 h-4 mr-2.5 text-amber-600"></i> Store Analytics
+                                </a>
+                                <a href="/admin/" target="_blank" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                    <i data-lucide="shield" class="w-4 h-4 mr-2.5 text-slate-400"></i> Django Admin
+                                </a>
+                                
+                            </div>
+                            <div class="py-1">
+                                <a href="/accounts/logout/" class="flex items-center px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-2.5 text-rose-500"></i> Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+
+            <!-- Categories / Secondary Navigation Bar -->
+            <nav class="flex items-center space-x-6 py-2.5 border-t border-slate-100 overflow-x-auto text-sm text-slate-600 font-medium">
+                <a href="/books/" class="hover:text-brand-600 whitespace-nowrap flex items-center gap-1.5">
+                    <i data-lucide="grid" class="w-4 h-4"></i> All Books
+                </a>
+                <a href="/books/?sort=popular" class="hover:text-brand-600 whitespace-nowrap flex items-center gap-1.5">
+                    <i data-lucide="flame" class="w-4 h-4 text-orange-500"></i> Bestsellers
+                </a>
+                <a href="/books/?sort=newest" class="hover:text-brand-600 whitespace-nowrap flex items-center gap-1.5">
+                    <i data-lucide="clock" class="w-4 h-4 text-blue-500"></i> New Releases
+                </a>
+                <span class="text-slate-300">|</span>
+                
+                <!-- Dynamic Genres -->
+                
+                <a href="/books/?genre=classic-coming-of-age" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic / Coming-of-Age
+                </a>
+                
+                <a href="/books/?genre=classic-fantasy-philosophical-fiction" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic / Fantasy / Philosophical Fiction
+                </a>
+                
+                <a href="/books/?genre=classic-fiction" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic / Fiction
+                </a>
+                
+                <a href="/books/?genre=classic-romance" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic / Romance
+                </a>
+                
+                <a href="/books/?genre=classic-fiction-drama" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic Fiction / Drama
+                </a>
+                
+                <a href="/books/?genre=classic-literature" class="hover:text-brand-600 whitespace-nowrap">
+                    Classic Literature
+                </a>
+                
+                <a href="/books/?genre=contemporary-fiction-feel-good-fiction" class="hover:text-brand-600 whitespace-nowrap">
+                    Contemporary Fiction / Feel-Good Fiction
+                </a>
+                
+            </nav>
+        </div>
+    </header>
+
+    <!-- Global Messages / Alerts -->
+    
+
+    <!-- Main Body Content -->
+    <main class="flex-grow">
+        
+<div class="bg-white border-b border-slate-200 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center text-xs text-slate-500 gap-1.5">
+            <a href="/" class="hover:text-brand-600">Home</a>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <a href="/books/" class="hover:text-brand-600">Catalog</a>
+            
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <a href="/genres/legal-thriller-mystery/" class="hover:text-brand-600">Legal Thriller, Mystery</a>
+            
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span class="text-slate-800 font-semibold truncate">The French Illusion</span>
+        </nav>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <!-- Left: Book Cover & Quick Actions -->
+        <div class="lg:col-span-4 space-y-4">
+            <div class="relative bg-slate-100 rounded-2xl overflow-hidden shadow-xl border border-slate-200 aspect-[3/4]">
+                <img src="/media/book_covers/9780385550543.tiff" alt="The French Illusion" class="w-full h-full object-cover">
+                
+                
+                <span class="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-lg shadow-md">
+                    21% OFF
+                </span>
+                
+
+                
+            </div>
+
+            <!-- Wishlist & Share buttons -->
+            <div class="flex items-center gap-3">
+                
+                <form action="/cart/wishlist/toggle/77/" method="POST" class="flex-1">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-300 hover:border-rose-300 hover:bg-rose-50 text-slate-700 hover:text-rose-600 text-xs font-semibold transition-colors">
+                        <i data-lucide="heart" class="w-4 h-4 "></i>
+                        Add to Wishlist
+                    </button>
+                </form>
+                
+                
+                <button onclick="navigator.clipboard.writeText(window.location.href); alert('Book link copied to clipboard!');" class="p-2.5 border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl" title="Share Book">
+                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Middle: Book Details & Synopsis -->
+        <div class="lg:col-span-5 space-y-6">
+            <div>
+                <!-- Genres -->
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                    
+                    <a href="/genres/legal-thriller-mystery/" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors">
+                        Legal Thriller, Mystery
+                    </a>
+                    
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl font-bold font-serif-title text-navy-900 leading-tight">The French Illusion</h1>
+                <p class="text-sm text-slate-600 mt-1">
+                    By <a href="/authors/john-grisham/" class="text-brand-600 hover:underline font-semibold">John Grisham</a>
+                </p>
+
+                <!-- Ratings summary -->
+                <div class="flex items-center gap-2 mt-3">
+                    <div class="flex text-amber-400">
+                        <i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800">0.0</span>
+                    <span class="text-xs text-slate-400">&bull;</span>
+                    <a href="#reviews-section" class="text-xs text-brand-600 hover:underline font-medium">0 verified reviews</a>
+                </div>
+            </div>
+
+            <!-- Synopsis -->
+            <div class="prose prose-sm text-slate-600 leading-relaxed pt-4 border-t border-slate-100">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Synopsis</h3>
+                <p class="whitespace-pre-line">A suspenseful mystery/thriller involving secrets, deception, danger, and an investigation that unfolds across an international setting</p>
+            </div>
+
+            <!-- Specs Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-xs">
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Format</span>
+                    <span class="font-semibold text-slate-800">Paperback</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Pages</span>
+                    <span class="font-semibold text-slate-800">496 pages</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Publisher</span>
+                    <span class="font-semibold text-slate-800 truncate block">Global Publishing</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Year</span>
+                    <span class="font-semibold text-slate-800">2026</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">Language</span>
+                    <span class="font-semibold text-slate-800">English</span>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <span class="text-slate-400 block mb-0.5">ISBN</span>
+                    <span class="font-semibold text-slate-800 font-mono truncate block">9780385550543</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Buy Box / Cart Card -->
+        <div class="lg:col-span-3">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg sticky top-28 space-y-6">
+                
+                <!-- Price -->
+                <div>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-bold text-navy-900 font-serif-title">₹789.00</span>
+                        
+                        <span class="text-sm text-slate-400 line-through">₹999.00</span>
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded">Save ₹210</span>
+                        
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Inclusive of applicable taxes</p>
+                </div>
+
+                <!-- Stock Status -->
+                <div class="flex items-center gap-2 text-xs font-semibold">
+                    
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="text-emerald-700">In Stock (10 copies available)</span>
+                    
+                </div>
+
+                <!-- Purchase Forms -->
+                
+                <form action="/cart/add/77/" method="POST" class="space-y-4">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                    
+                    <div>
+                        <label for="quantity" class="text-xs font-semibold text-slate-700 block mb-1">Quantity:</label>
+                        <select name="quantity" id="quantity" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-800">
+                            
+                                
+                                <option value="1">1</option>
+                                
+                            
+                                
+                                <option value="2">2</option>
+                                
+                            
+                                
+                                <option value="3">3</option>
+                                
+                            
+                                
+                                <option value="4">4</option>
+                                
+                            
+                                
+                                <option value="5">5</option>
+                                
+                            
+                        </select>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <button type="submit" name="buy_now" value="false" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow-md text-sm transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i> Add to Cart
+                        </button>
+                        
+                        <button type="submit" name="buy_now" value="true" class="w-full py-3 bg-navy-900 hover:bg-navy-800 text-white font-bold rounded-xl shadow-md text-sm transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i> Buy Now
+                        </button>
+                    </div>
+                </form>
+                
+
+                <!-- Guarantee perks -->
+                <div class="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="truck" class="w-4 h-4 text-brand-600"></i> Free standard shipping on ₹499+
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Secure mock checkout
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-brand-600"></i> AI Match Score verified
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Frequently Bought Together Bundle -->
+    
+    <div class="mt-16 bg-gradient-to-r from-slate-50 to-brand-50/40 rounded-2xl p-6 sm:p-8 border border-brand-200/80 shadow-sm">
+        <div class="flex items-center gap-2 text-brand-700 font-bold text-xs uppercase tracking-wider mb-2">
+            <i data-lucide="layers" class="w-4 h-4"></i> Market Basket Bundle Analysis
+        </div>
+        <h3 class="text-xl sm:text-2xl font-bold font-serif-title text-navy-900 mb-6">Frequently Bought Together</h3>
+
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <!-- Books Preview -->
+            <div class="flex flex-wrap items-center gap-4">
+                
+                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <img src="/media/book_covers/9780385550543.tiff" alt="The French Illusion" class="w-12 h-16 object-cover rounded shadow-sm">
+                    <div class="max-w-[150px]">
+                        <h4 class="text-xs font-bold text-slate-900 truncate">The French Illusion</h4>
+                        <p class="text-[11px] text-slate-500 truncate">by John Grisham</p>
+                        <span class="text-xs font-bold text-brand-600">₹789.00</span>
+                    </div>
+                </div>
+                
+                <span class="text-xl font-bold text-slate-400">+</span>
+                
+                
+                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <img src="/media/book_covers/Screenshot_2026-08-25_135003.png" alt="The Midnight Feast" class="w-12 h-16 object-cover rounded shadow-sm">
+                    <div class="max-w-[150px]">
+                        <h4 class="text-xs font-bold text-slate-900 truncate">The Midnight Feast</h4>
+                        <p class="text-[11px] text-slate-500 truncate">by Lucy Foley</p>
+                        <span class="text-xs font-bold text-brand-600">₹498.00</span>
+                    </div>
+                </div>
+                
+                <span class="text-xl font-bold text-slate-400">+</span>
+                
+                
+                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <img src="/media/book_covers/Screenshot_2026-08-25_132713.png" alt="The Da Vinci Code" class="w-12 h-16 object-cover rounded shadow-sm">
+                    <div class="max-w-[150px]">
+                        <h4 class="text-xs font-bold text-slate-900 truncate">The Da Vinci Code</h4>
+                        <p class="text-[11px] text-slate-500 truncate">by Dan Brown</p>
+                        <span class="text-xs font-bold text-brand-600">₹399.00</span>
+                    </div>
+                </div>
+                
+                
+            </div>
+
+            <!-- Bundle Total & Add Button -->
+            <div class="text-center lg:text-right bg-white p-5 rounded-xl border border-slate-200 shadow-sm w-full lg:w-auto">
+                <div class="text-xs text-slate-500">Total Bundle Price:</div>
+                <div class="text-2xl font-bold text-navy-900 font-serif-title">₹1686.00</div>
+                
+                <form action="/cart/add-bundle/" method="POST" class="mt-3">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                    
+                    <input type="hidden" name="book_ids" value="77">
+                    
+                    <input type="hidden" name="book_ids" value="54">
+                    
+                    <input type="hidden" name="book_ids" value="49">
+                    
+                    <button type="submit" class="w-full px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Add All to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <!-- Similar Books Recommendations (Content & Collaborative) -->
+    
+    <div class="mt-16">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block">AI Matching Matrix</span>
+                <h3 class="text-2xl font-bold font-serif-title text-navy-900">Readers Also Enjoyed</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/the-midnight-feast/">
+                            <img src="/media/book_covers/Screenshot_2026-08-25_135003.png" alt="The Midnight Feast" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            14%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(54)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/the-midnight-feast/">The Midnight Feast</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Lucy Foley</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹498.00</span>
+                    <form action="/cart/add/54/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/the-da-vinci-code/">
+                            <img src="/media/book_covers/Screenshot_2026-08-25_132713.png" alt="The Da Vinci Code" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            13%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(49)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/the-da-vinci-code/">The Da Vinci Code</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Dan Brown</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹399.00</span>
+                    <form action="/cart/add/49/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/the-housemaid/">
+                            <img src="/media/book_covers/Screenshot_2026-08-25_134131.png" alt="The Housemaid" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            11%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(52)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/the-housemaid/">The Housemaid</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Freida McFadden</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹449.00</span>
+                    <form action="/cart/add/52/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/exit-party/">
+                            <img src="/media/book_covers/Screenshot_2026-09-03_234754.png" alt="Exit Party" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            10%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(69)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/exit-party/">Exit Party</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Emily St. John MandelEmily St. John Mandel</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹650.10</span>
+                    <form action="/cart/add/69/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/gone-girl/">
+                            <img src="/media/book_covers/Screenshot_2026-08-25_144954.png" alt="Gone Girl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            9%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(68)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/gone-girl/">Gone Girl</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Gillian Flynn</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹399.00</span>
+                    <form action="/cart/add/68/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+            
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-300 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
+                        <a href="/books/the-alchemists-daughter/">
+                            <img src="/media/book_covers/Screenshot_2026-08-25_140433.png" alt="The Alchemist&#x27;s Daughter" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2 left-2 bg-navy-900/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            7%
+                        </span>
+                    </div>
+
+                    <button onclick="explainRecommendation(58)" class="text-[10px] font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 px-1.5 py-0.5 rounded line-clamp-1 mb-1 text-left w-full">
+                        Similar plot &amp; themes
+                    </button>
+
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="/books/the-alchemists-daughter/">The Alchemist&#x27;s Daughter</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">Katharine McMahon</p>
+                </div>
+
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹399.00</span>
+                    <form action="/cart/add/58/" method="POST">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors" title="Add to Cart">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+    
+
+
+    <!-- Customer Reviews & Rating Section -->
+    <div id="reviews-section" class="mt-20 pt-10 border-t border-slate-200">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Left: Reviews Breakdown & Form -->
+            <div class="lg:col-span-5 space-y-6">
+                <div>
+                    <h3 class="text-2xl font-bold font-serif-title text-navy-900">Customer Reviews</h3>
+                    <div class="flex items-center gap-3 mt-3">
+                        <div class="text-4xl font-bold font-serif-title text-navy-900">0.0</div>
+                        <div>
+                            <div class="flex text-amber-400"><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i><i data-lucide="star" class="w-4 h-4 text-slate-300"></i></div>
+                            <span class="text-xs text-slate-500">Based on 0 ratings</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Write a Review Form -->
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                    
+                    <h4 class="font-bold text-sm text-navy-900 mb-1">
+                        Write a Review
+                    </h4>
+                    <p class="text-xs text-slate-500 mb-4">Share your thoughts with other book lovers.</p>
+
+                    <form action="/books/the-french-illusion/review/" method="POST" class="space-y-4">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="HmYG9wWBirQJ8vR0BDmHp8A69tST3P78tisUCfLRqaGDWaTCqbRoc20afGWd6CG9">
+                        
+                        <!-- Interactive Star Rating Picker -->
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1.5">Your Rating:</label>
+                            <input type="hidden" name="rating" id="review-rating-input" value="5">
+                            <div class="flex items-center space-x-1" id="star-rating-picker">
+                                
+                                <button type="button" data-rating="1" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 fill-amber-400"></i>
+                                </button>
+                                
+                                <button type="button" data-rating="2" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 fill-amber-400"></i>
+                                </button>
+                                
+                                <button type="button" data-rating="3" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 fill-amber-400"></i>
+                                </button>
+                                
+                                <button type="button" data-rating="4" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 fill-amber-400"></i>
+                                </button>
+                                
+                                <button type="button" data-rating="5" class="star-btn p-1 text-amber-400 hover:scale-110 transition-transform">
+                                    <i data-lucide="star" class="w-6 h-6 fill-amber-400"></i>
+                                </button>
+                                
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1">Review Headline:</label>
+                            <input type="text" name="headline" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="What is the most important thing to know? (e.g., A Masterpiece of World-Building!)" maxlength="200" id="id_headline">
+                            
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1">Detailed Review:</label>
+                            <textarea name="body" cols="40" rows="4" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" placeholder="What did you like or dislike? What should other readers know before reading?" required id="id_body">
+</textarea>
+                            
+                        </div>
+
+                        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl text-xs shadow transition-colors">
+                            Submit Review
+                        </button>
+                    </form>
+
+                    
+                </div>
+
+            </div>
+
+            <!-- Right: List of Reviews -->
+            <div class="lg:col-span-7 space-y-4">
+                
+                <div class="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-2">
+                    <i data-lucide="star" class="w-8 h-8 text-amber-400 mx-auto"></i>
+                    <h4 class="font-bold text-sm text-navy-900">Be the first to review this book!</h4>
+                    <p class="text-xs text-slate-500">Your review helps other readers discover great literature.</p>
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+    </main>
+
+    <!-- AI Explainability Modal -->
+    <div id="ai-explain-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2 text-brand-600">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    <h3 class="text-base font-bold text-navy-900">Why was this recommended?</h3>
+                </div>
+                <button onclick="closeExplainModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="ai-modal-content" class="py-4 space-y-3">
+                <div class="animate-pulse space-y-2">
+                    <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex justify-end">
+                <button onclick="closeExplainModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="no-print bg-navy-900 text-slate-300 mt-20 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <!-- Col 1: About -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white">
+                            <i data-lucide="book-open-check" class="w-5 h-5"></i>
+                        </div>
+                        <span class="text-2xl font-bold font-serif-title text-white">Reader's<span class="text-brand-400">Haven</span></span>
+                    </div>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        An intelligent online bookstore blending collaborative filtering, content-based NLP, and shopping cart intelligence to connect you with stories you'll cherish forever.
+                    </p>
+                    <div class="flex items-center space-x-3 text-slate-400 pt-2">
+                        <span class="p-2 rounded-lg bg-slate-800 hover:text-white cursor-pointer"><i data-lucide="twitter" class="w-4 h-4"></i></span>
+                        <span class="p-2 rounded-lg bg-slate-800 hover:text-white cursor-pointer"><i data-lucide="github" class="w-4 h-4"></i></span>
+                        <span class="p-2 rounded-lg bg-slate-800 hover:text-white cursor-pointer"><i data-lucide="instagram" class="w-4 h-4"></i></span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Categories -->
+                <div>
+                    <h4 class="text-white font-semibold text-sm tracking-wider uppercase mb-4">Explore Genres</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        
+                        <li>
+                            <a href="/books/?genre=classic-coming-of-age" class="hover:text-brand-400 transition-colors">
+                                Classic / Coming-of-Age
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/books/?genre=classic-fantasy-philosophical-fiction" class="hover:text-brand-400 transition-colors">
+                                Classic / Fantasy / Philosophical Fiction
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/books/?genre=classic-fiction" class="hover:text-brand-400 transition-colors">
+                                Classic / Fiction
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/books/?genre=classic-romance" class="hover:text-brand-400 transition-colors">
+                                Classic / Romance
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/books/?genre=classic-fiction-drama" class="hover:text-brand-400 transition-colors">
+                                Classic Fiction / Drama
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="/books/?genre=classic-literature" class="hover:text-brand-400 transition-colors">
+                                Classic Literature
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+
+                <!-- Col 3: Smart Tools -->
+                <div>
+                    <h4 class="text-white font-semibold text-sm tracking-wider uppercase mb-4">Smart Store Features</h4>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="/recommendations/for-you/" class="hover:text-brand-400 flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-400"></i> AI Recommendation Hub</a></li>
+                        <li><a href="/books/?sort=popular" class="hover:text-brand-400">Trending Bestsellers</a></li>
+                        <li><a href="/cart/wishlist/" class="hover:text-brand-400">Reading Wishlist</a></li>
+                        <li><a href="/accounts/profile/" class="hover:text-brand-400">Reading Goal Tracker</a></li>
+                        
+                        <li><a href="/analytics/dashboard/" class="hover:text-amber-400">Store Manager Analytics</a></li>
+                        
+                    </ul>
+                </div>
+
+                <!-- Col 4: Newsletter & Discount -->
+                <div>
+                    <h4 class="text-white font-semibold text-sm tracking-wider uppercase mb-4">Special Offers</h4>
+                    <p class="text-sm text-slate-400 mb-3">Subscribe for weekly curated book picks and secret promo codes.</p>
+                    <div class="flex items-center gap-2">
+                        <input type="email" placeholder="Enter your email" class="px-3.5 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 flex-1">
+                        <button class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-sm font-semibold transition-colors">Join</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Active Promo: Use code <span class="text-brand-400 font-mono font-bold">BOOKWORM15</span></p>
+                </div>
+
+            </div>
+
+            <div class="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 Reader's Haven Inc. Built with Python, Django, SQLite, and scikit-learn.</p>
+                <div class="flex items-center space-x-6">
+                    <span>Terms & Conditions</span>
+                    <span>Privacy Policy</span>
+                    <span>AI Ethics & Transparency</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Live Search Autocomplete
+        const searchInput = document.getElementById('global-search-input');
+        const searchDropdown = document.getElementById('search-autocomplete-box');
+        let searchTimeout = null;
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                clearTimeout(searchTimeout);
+
+                if (query.length < 2) {
+                    searchDropdown.classList.add('hidden');
+                    searchDropdown.innerHTML = '';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`/api/search-autocomplete/?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.results && data.results.length > 0) {
+                                let html = '';
+                                data.results.forEach(book => {
+                                    html += `
+                                        <a href="${book.url}" class="flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors">
+                                            <img src="${book.cover_url}" alt="${book.title}" class="w-10 h-14 object-cover rounded shadow-sm">
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-sm font-semibold text-slate-900 truncate">${book.title}</h4>
+                                                <p class="text-xs text-slate-500 truncate">by ${book.author}</p>
+                                                <div class="flex items-center gap-2 mt-0.5">
+                                                    <span class="text-xs font-bold text-brand-600">₹${book.price}</span>
+                                                    <span class="text-[11px] text-amber-500 font-medium flex items-center">★ ${book.rating}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+                                html += `<div class="p-2.5 bg-slate-50 text-center border-t border-slate-100">
+                                    <button onclick="this.closest('form').submit()" class="text-xs font-semibold text-brand-600 hover:text-brand-700">View all results for "${query}" &rarr;</button>
+                                </div>`;
+                                searchDropdown.innerHTML = html;
+                                searchDropdown.classList.remove('hidden');
+                            } else {
+                                searchDropdown.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No books found matching "${query}"</div>`;
+                                searchDropdown.classList.remove('hidden');
+                            }
+                        });
+                }, 250);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+                    searchDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Explainability Modal Functions
+        function explainRecommendation(bookId) {
+            const modal = document.getElementById('ai-explain-modal');
+            const content = document.getElementById('ai-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            fetch(`/recommendations/explain/${bookId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    let reasonsHtml = '';
+                    data.reasons.forEach(r => {
+                        reasonsHtml += `
+                            <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                                <div class="flex items-center gap-2 text-slate-900 font-semibold text-sm mb-1">
+                                    <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                                    ${r.title}
+                                </div>
+                                <p class="text-xs text-slate-600 ml-6">${r.description}</p>
+                            </div>
+                        `;
+                    });
+
+                    content.innerHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-bold text-slate-900 text-lg">${data.book_title}</h4>
+                            <p class="text-sm text-slate-500">by ${data.author} &bull; ${data.genres.join(', ')}</p>
+                        </div>
+                        <div class="space-y-2.5">
+                            ${reasonsHtml}
+                        </div>
+                    `;
+                    lucide.createIcons();
+                });
+        }
+
+        function closeExplainModal() {
+            const modal = document.getElementById('ai-explain-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+    
+<script>
+    // Interactive Star Picker
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('review-rating-input');
+
+    if (starBtns.length > 0 && ratingInput) {
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingInput.value = rating;
+                updateStarDisplay(rating);
+            });
+        });
+
+        function updateStarDisplay(val) {
+            starBtns.forEach(btn => {
+                const r = parseInt(btn.getAttribute('data-rating'));
+                const icon = btn.querySelector('svg') || btn.querySelector('i');
+                if (r <= val) {
+                    btn.innerHTML = '<i data-lucide="star" class="w-6 h-6 fill-amber-400 text-amber-400"></i>';
+                } else {
+                    btn.innerHTML = '<i data-lucide="star" class="w-6 h-6 text-slate-300"></i>';
+                }
+            });
+            lucide.createIcons();
+        }
+    }
+
+    // Prefill form if editing existing review
+    const headlinePrefill = document.getElementById('headline-prefill');
+    const bodyPrefill = document.getElementById('body-prefill');
+    if (headlinePrefill) {
+        const headlineField = document.querySelector('input[name="headline"]');
+        if (headlineField && !headlineField.value) headlineField.value = headlinePrefill.value;
+    }
+    if (bodyPrefill) {
+        const bodyField = document.querySelector('textarea[name="body"]');
+        if (bodyField && !bodyField.value) bodyField.value = bodyPrefill.value;
+    }
+</script>
+
+</body>
+</html>

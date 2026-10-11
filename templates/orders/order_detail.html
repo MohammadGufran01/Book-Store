@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}Invoice #{{ order.order_number }} | Reader's Haven{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex items-center justify-between pb-6 border-b border-slate-200 mb-6">
+        <div>
+            <a href="{% url 'orders:order_history' %}" class="text-xs text-brand-600 hover:underline flex items-center gap-1 mb-1 no-print">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to My Orders
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-bold font-serif-title text-navy-900">Order #{{ order.order_number }}</h1>
+            <p class="text-xs text-slate-500">Placed on {{ order.created_at|date:"F d, Y - h:i A" }}</p>
+        </div>
+
+        <div class="flex items-center gap-3 no-print">
+            <button onclick="window.print()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs flex items-center gap-1.5 transition-colors">
+                <i data-lucide="printer" class="w-4 h-4"></i> Print Invoice
+            </button>
+            {% if order.status in 'Pending Processing' %}
+            <form action="{% url 'orders:cancel_order' order.order_number %}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                {% csrf_token %}
+                <button type="submit" class="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-xl text-xs transition-colors">
+                    Cancel Order
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Status Badge -->
+    <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <span class="p-2 rounded-xl bg-brand-50 text-brand-600"><i data-lucide="package" class="w-5 h-5"></i></span>
+            <div>
+                <span class="text-xs text-slate-400 block">Current Status</span>
+                <span class="text-sm font-bold text-navy-900">{{ order.get_status_display }}</span>
+            </div>
+        </div>
+        <div>
+            <span class="text-xs text-slate-400 block">Payment</span>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">{{ order.get_payment_status_display }}</span>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6 space-y-6">
+        <h3 class="font-bold text-base text-navy-900 font-serif-title">Items in this Order</h3>
+
+        <div class="divide-y divide-slate-100">
+            {% for item in items %}
+            <div class="py-4 flex items-center justify-between gap-4 text-xs">
+                <div class="flex items-center gap-3">
+                    {% if item.book %}
+                    <img src="{{ item.book.get_cover_image_url }}" alt="{{ item.book_title }}" class="w-12 h-16 object-cover rounded shadow-sm">
+                    {% endif %}
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">
+                            {% if item.book %}<a href="{{ item.book.get_absolute_url }}" class="hover:text-brand-600">{{ item.book_title }}</a>{% else %}{{ item.book_title }}{% endif %}
+                        </h4>
+                        <p class="text-slate-500 text-[11px]">Author: {{ item.book_author }} &bull; Qty: {{ item.quantity }}</p>
+                        <span class="text-slate-700 font-medium">₹{{ item.price }} per copy</span>
+                    </div>
+                </div>
+                <span class="font-bold text-slate-900 text-sm">₹{{ item.total_price }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-xl space-y-2 text-xs border border-slate-200/60">
+            <div class="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span>₹{{ order.subtotal }}</span>
+            </div>
+            {% if order.discount_amount > 0 %}
+            <div class="flex justify-between text-emerald-600">
+                <span>Coupon Discount ({{ order.coupon_code }})</span>
+                <span>-₹{{ order.discount_amount }}</span>
+            </div>
+            {% endif %}
+            <div class="flex justify-between text-slate-600">
+                <span>Shipping</span>
+                <span>₹{{ order.shipping_fee }}</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+                <span>Tax (5% GST)</span>
+                <span>₹{{ order.tax_amount }}</span>
+            </div>
+            <div class="flex justify-between text-base font-bold text-navy-900 border-t border-slate-200 pt-2">
+                <span>Total Amount</span>
+                <span class="text-brand-600 font-serif-title">₹{{ order.total_amount }}</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs text-slate-600">
+            <div>
+                <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">Shipping Details:</h4>
+                <p>{{ order.full_name }}</p>
+                <p>{{ order.address_line1 }}</p>
+                {% if order.address_line2 %}<p>{{ order.address_line2 }}</p>{% endif %}
+                <p>{{ order.city }}, {{ order.state }} {{ order.postal_code }}</p>
+                <p>{{ order.country }}</p>
+                <p class="text-slate-400 mt-1">Phone: {{ order.phone }}</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-slate-900 uppercase tracking-wider text-[11px] mb-1">Payment Info:</h4>
+                <p>Method: {{ order.get_payment_method_display }}</p>
+                <p>Transaction: <span class="font-mono text-slate-700">{{ order.transaction_id }}</span></p>
+                <p>Status: {{ order.get_payment_status_display }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

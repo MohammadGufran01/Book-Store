@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static recommendation_tags humanize %}
+
+{% block title %}AI Recommendation Hub | For You | Reader's Haven{% endblock %}
+
+{% block content %}
+<!-- AI Header Banner -->
+<div class="bg-gradient-to-br from-navy-900 via-slate-900 to-navy-800 text-white py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-semibold uppercase tracking-wider border border-brand-500/30">
+                <i data-lucide="sparkles" class="w-4 h-4 text-brand-400"></i> AI Recommendation Engine
+            </div>
+            <h1 class="text-3xl sm:text-5xl font-bold font-serif-title leading-tight">
+                Curated Exclusively For <span class="text-brand-400">{% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}You{% endif %}</span>
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                Powered by a hybrid multi-strategy architecture combining <strong>TF-IDF Content Analysis</strong>, <strong>User-Item Collaborative Filtering</strong>, <strong>Market Basket Association</strong>, and <strong>Bayesian Rating Smoothing</strong>.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+    
+    <!-- Section 1: Main Hybrid Recommendations -->
+    <section>
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 block">Strategy 1: Hybrid AI Blend (40% Collab + 40% Content + 20% Popularity)</span>
+                <h2 class="text-2xl font-bold font-serif-title text-navy-900">Your Top Recommended Titles</h2>
+            </div>
+            <span class="text-xs text-slate-400 font-mono hidden sm:inline">Real-time Hybrid Engine</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for item in hybrid_recs %}
+            {% with book=item.book %}
+            <div class="bg-white rounded-2xl border border-slate-200 hover:border-brand-400 hover:shadow-xl transition-all p-4 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-3 relative">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.get_cover_image_url }}" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        <span class="absolute top-2.5 left-2.5 bg-navy-900/90 text-brand-300 text-[11px] font-bold px-2 py-0.5 rounded shadow border border-brand-400/30">
+                            {{ item.score }}% Match
+                        </span>
+                    </div>
+
+                    <!-- AI Explanation Badge -->
+                    <button onclick="explainRecommendation({{ book.id }})" class="w-full text-left text-[11px] font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 px-2 py-1 rounded-lg line-clamp-1 mb-2 transition-colors">
+                        💡 {{ item.reason }}
+                    </button>
+
+                    <h3 class="font-bold text-sm font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                    </h3>
+                    <p class="text-xs text-slate-500 line-clamp-1">by {{ book.author.name }}</p>
+
+                    <div class="flex items-center gap-1 mt-1.5">
+                        <div class="flex text-amber-400">{{ book.average_rating|render_stars }}</div>
+                        <span class="text-xs font-semibold text-slate-700 ml-1">{{ book.average_rating }}</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-sm font-bold text-navy-900">₹{{ book.effective_price }}</span>
+                    <form action="{% url 'cart:add_to_cart' book.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="px-3 py-1.5 bg-navy-900 hover:bg-brand-600 text-white rounded-lg text-xs font-semibold transition-colors">
+                            Add to Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Section 2: Content-Based NLP Feed -->
+    {% if content_recs %}
+    <section class="bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200">
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-600 block">Strategy 2: Content-Based NLP (TF-IDF & Cosine Similarity)</span>
+                <h2 class="text-2xl font-bold font-serif-title text-navy-900">
+                    {% if reference_book %}Because You Enjoyed "{{ reference_book.title }}"{% else %}Matched to Your Literary Tastes{% endif %}
+                </h2>
+            </div>
+            <span class="text-xs text-purple-600 font-semibold bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">NLP Cosine &gt; 0.65</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for item in content_recs %}
+            {% with book=item.book %}
+            <div class="bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.get_cover_image_url }}" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                    </div>
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">{{ book.author.name }}</p>
+                </div>
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹{{ book.effective_price }}</span>
+                    <form action="{% url 'cart:add_to_cart' book.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Section 3: Collaborative Filtering Feed -->
+    {% if collab_recs %}
+    <section>
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 block">Strategy 3: Collaborative Filtering (User-User Interaction Matrix)</span>
+                <h2 class="text-2xl font-bold font-serif-title text-navy-900">Readers With Your Taste Also Loved</h2>
+            </div>
+            <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">Peer Correlation Matrix</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for item in collab_recs %}
+            {% with book=item.book %}
+            <div class="bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all p-3 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-2.5">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.get_cover_image_url }}" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                    </div>
+                    <h4 class="font-bold text-xs font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                    </h4>
+                    <p class="text-[11px] text-slate-500 line-clamp-1">{{ book.author.name }}</p>
+                </div>
+                <div class="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs font-bold text-navy-900">₹{{ book.effective_price }}</span>
+                    <form action="{% url 'cart:add_to_cart' book.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="p-1 bg-slate-100 hover:bg-brand-600 hover:text-white rounded-lg text-slate-600 transition-colors">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Section 4: Genre Spotlights based on Profile -->
+    {% for spotlight in genre_spotlights %}
+    <section>
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 block">Favorite Category Spotlight</span>
+                <h2 class="text-2xl font-bold font-serif-title text-navy-900">Top Picks in {{ spotlight.genre.name }}</h2>
+            </div>
+            <a href="{% url 'books:book_list' %}?genre={{ spotlight.genre.slug }}" class="text-xs font-semibold text-brand-600 hover:underline">
+                View All {{ spotlight.genre.name }} &rarr;
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {% for item in spotlight.books %}
+            {% with book=item.book %}
+            <div class="bg-white rounded-2xl border border-slate-200 hover:shadow-lg transition-all p-4 flex flex-col justify-between group">
+                <div>
+                    <div class="aspect-[3/4] rounded-xl bg-slate-100 overflow-hidden mb-3">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.get_cover_image_url }}" alt="{{ book.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                    </div>
+                    <h3 class="font-bold text-sm font-serif-title text-slate-900 line-clamp-1 group-hover:text-brand-600">
+                        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                    </h3>
+                    <p class="text-xs text-slate-500 line-clamp-1">by {{ book.author.name }}</p>
+                </div>
+                <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-sm font-bold text-navy-900">₹{{ book.effective_price }}</span>
+                    <form action="{% url 'cart:add_to_cart' book.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="px-3 py-1 bg-navy-900 hover:bg-brand-600 text-white rounded-lg text-xs font-semibold transition-colors">
+                            Add
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+
+    <!-- Technical Architecture Info Card -->
+    <div class="bg-slate-900 text-white rounded-3xl p-8 shadow-2xl border border-slate-800 space-y-4">
+        <div class="flex items-center gap-2 text-brand-400 font-bold text-xs uppercase tracking-wider">
+            <i data-lucide="info" class="w-4 h-4"></i> Transparent Machine Learning Architecture
+        </div>
+        <h3 class="text-2xl font-bold font-serif-title">How Your Recommendations Evolve</h3>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Every time you browse books, add items to your wishlist or cart, complete orders, or leave 1-5 star reviews, our SQLite interaction matrix updates in real-time. The TF-IDF vectorizer extracts keywords and tropes from book synopses, while cosine similarity matches your reading behavior with cluster patterns of readers who share your literary taste.
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-center text-xs">
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <span class="text-brand-400 font-bold block text-sm">TF-IDF</span>
+                <span class="text-slate-400 text-[11px]">N-gram NLP Synopsis Analysis</span>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <span class="text-brand-400 font-bold block text-sm">User-User CF</span>
+                <span class="text-slate-400 text-[11px]">Neighbor Rating Prediction</span>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <span class="text-brand-400 font-bold block text-sm">Bayesian Average</span>
+                <span class="text-slate-400 text-[11px]">Confidence-Weighted Ratings</span>
+            </div>
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700">
+                <span class="text-brand-400 font-bold block text-sm">Market Basket</span>
+                <span class="text-slate-400 text-[11px]">Checkout Pair Co-occurrence</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

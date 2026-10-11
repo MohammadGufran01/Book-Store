@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+*.sqlite3-journal
+.vscode/
+.DS_Store
+*.log
+staticfiles/
+*.backup
+db_data_backup.json
+db.sqlite3
+.vercel/
